@@ -1,0 +1,48 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.NoteTypeMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加笔记类型记录 -->
+	<insert id="addNoteType" parameterType="noteType">
+		insert into t_noteType(noteTypeName,noteTypeDesc) values 
+		(#{noteTypeName},#{noteTypeDesc})
+	</insert>
+
+	<!-- 按照查询条件分页查询笔记类型记录 -->
+	<select id="queryNoteType" resultMap="noteTypeMap" >
+		select t_noteType.* from t_noteType ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="noteTypeMap" type="noteType">
+        <id property="noteTypeId" column="noteTypeId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有笔记类型记录 -->
+	<select id="queryNoteTypeList" resultMap="noteTypeMap" >
+		select t_noteType.* from t_noteType ${where}
+	</select>
+
+    <!-- 按照查询条件的笔记类型记录数 -->
+	<select id="queryNoteTypeCount" resultType="int">
+		select count(*) from t_noteType ${where}
+	</select>
+
+	<!-- 根据主键查询某个笔记类型记录 -->
+	<select id="getNoteType" parameterType="int" resultMap="noteTypeMap">
+		select * from t_noteType where t_noteType.noteTypeId = #{noteTypeId}
+	</select>
+
+	<!-- 更新笔记类型记录 -->
+	<update id="updateNoteType" parameterType="noteType">
+		update t_noteType set noteTypeName=#{noteTypeName},noteTypeDesc=#{noteTypeDesc} where noteTypeId = #{noteTypeId}
+	</update>
+
+	<!-- 删除笔记类型记录 -->
+	<delete id="deleteNoteType" parameterType="int">
+		delete from t_noteType where noteTypeId=#{noteTypeId}
+	</delete>
+
+</mapper>

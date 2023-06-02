@@ -1,0 +1,50 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.NoteMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加笔记记录 -->
+	<insert id="addNote" parameterType="note">
+		insert into t_note(noteTypeObj,title,notebookPhoto,content,noteFile,deleteFlag,userObj,addTime) values 
+		(#{noteTypeObj.noteTypeId},#{title},#{notebookPhoto},#{content},#{noteFile},#{deleteFlag},#{userObj.user_name},#{addTime})
+	</insert>
+
+	<!-- 按照查询条件分页查询笔记记录 -->
+	<select id="queryNote" resultMap="noteMap" >
+		select t_note.* from t_note,t_noteType,t_userInfo ${where} and t_note.noteTypeObj = t_noteType.noteTypeId and t_note.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="noteMap" type="note">
+        <id property="noteId" column="noteId" />
+        <association property="noteTypeObj" column="noteTypeObj" select="com.chengxusheji.mapper.NoteTypeMapper.getNoteType" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有笔记记录 -->
+	<select id="queryNoteList" resultMap="noteMap" >
+		select t_note.* from t_note,t_noteType,t_userInfo ${where} and t_note.noteTypeObj = t_noteType.noteTypeId and t_note.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的笔记记录数 -->
+	<select id="queryNoteCount" resultType="int">
+		select count(*) from t_note,t_noteType,t_userInfo ${where} and t_note.noteTypeObj = t_noteType.noteTypeId and t_note.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个笔记记录 -->
+	<select id="getNote" parameterType="int" resultMap="noteMap">
+		select * from t_note where t_note.noteId = #{noteId}
+	</select>
+
+	<!-- 更新笔记记录 -->
+	<update id="updateNote" parameterType="note">
+		update t_note set noteTypeObj=#{noteTypeObj.noteTypeId},title=#{title},notebookPhoto=#{notebookPhoto},content=#{content},noteFile=#{noteFile},deleteFlag=#{deleteFlag},userObj=#{userObj.user_name},addTime=#{addTime} where noteId = #{noteId}
+	</update>
+
+	<!-- 删除笔记记录 -->
+	<delete id="deleteNote" parameterType="int">
+		delete from t_note where noteId=#{noteId}
+	</delete>
+
+</mapper>
